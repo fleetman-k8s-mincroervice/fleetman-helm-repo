@@ -11,6 +11,13 @@ spec:
   selector:
     matchLabels:
       {{- include "fleetman.selectorLabels" . | nindent 6 }}
+  strategy:
+   type: {{ .Values.strategy.type }}
+   {{- if eq .Values.strategy.type "RollingUpdate" }}
+   rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+   {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -37,9 +44,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
+            - name: admin-console
+              containerPort: {{ .Values.queue.service.port }}
               protocol: TCP
+
+            - name: endpoint
+              containerPort: {{ .Values.queue.service.portEndpoint }}
+              protocol: TCP
+
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

@@ -5,11 +5,17 @@ metadata:
   labels:
     {{- include "fleetman.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.queue.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ .Values.queue.service.port }}
+      targetPort: admin-console
       protocol: TCP
-      name: http
+      name: admin-console
+
+    - port: {{ .Values.queue.service.portEndpoint }}
+      targetPort: endpoint
+      protocol: TCP
+      name: endpoint
+
   selector:
     {{- include "fleetman.selectorLabels" . | nindent 4 }}
