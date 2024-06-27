@@ -14,7 +14,7 @@ imagePullSecrets:
 - name: jfrog-docker-reg
 
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "fleetman"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -44,9 +44,10 @@ securityContext: {}
 #fleetman-queue-admin-console
 queue:
   service:
-    type: ClusterIP
+    type: NodePort
     port: 8161
     portEndpoint: 61616
+    nodePort: 30061
 
 service:
   type: ClusterIP

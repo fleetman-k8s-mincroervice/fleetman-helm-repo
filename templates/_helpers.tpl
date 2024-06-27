@@ -46,7 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "fleetman.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "fleetman.name" . }}
+app.kubernetes.io/name: {{ include "fleetman.name" . }}-queue
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

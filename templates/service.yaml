@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "fleetman.fullname" . }}
+  name: {{ include "fleetman.fullname" . }}-queue
   labels:
     {{- include "fleetman.labels" . | nindent 4 }}
 spec:
@@ -11,6 +11,7 @@ spec:
       targetPort: admin-console
       protocol: TCP
       name: admin-console
+      nodePort: {{ .Values.queue.service.nodePort }}
 
     - port: {{ .Values.queue.service.portEndpoint }}
       targetPort: endpoint

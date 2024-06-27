@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "fleetman.fullname" . }}
+  name: {{ include "fleetman.fullname" . }}-queue
   labels:
     {{- include "fleetman.labels" . | nindent 4 }}
 spec:
