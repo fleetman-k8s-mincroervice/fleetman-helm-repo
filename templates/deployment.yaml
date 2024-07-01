@@ -41,8 +41,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.queue.image.repository }}:{{ .Values.queue.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.queue.image.pullPolicy }}
           ports:
             - name: admin-console
               containerPort: {{ .Values.queue.service.port }}
@@ -52,29 +52,213 @@ spec:
               containerPort: {{ .Values.queue.service.portEndpoint }}
               protocol: TCP
 
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
-      volumes:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetman.fullname" . }}-simulator
+  labels:
+    {{- include "fleetman.simulator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "fleetman.simulator.selectorLabels" . | nindent 6 }}
+  strategy:
+   type: {{ .Values.strategy.type }}
+   {{- if eq .Values.strategy.type "RollingUpdate" }}
+   rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+   {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
+      labels:
+        {{- include "fleetman.simulator.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
+      serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-simulator
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.simulator.image.repository }}:{{ .Values.simulator.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
+          env:
+            - name: {{ .Values.environment.name }}
+              value: {{ .Values.environment.value }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetman.fullname" . }}-position-tracker
+  labels:
+    {{- include "fleetman.tracker.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "fleetman.tracker.selectorLabels" . | nindent 6 }}
+  strategy:
+   type: {{ .Values.strategy.type }}
+   {{- if eq .Values.strategy.type "RollingUpdate" }}
+   rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+   {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
+      labels:
+        {{- include "fleetman.tracker.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-position-tracker
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.tracker.image.repository }}:{{ .Values.tracker.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
+          env:
+            - name: {{ .Values.environment.name }}
+              value: {{ .Values.environment.value }}
+          ports:
+            - name: tracker
+              containerPort: {{ .Values.tracker.service.port }}
+              protocol: TCP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetman.fullname" . }}-api-gateway
+  labels:
+    {{- include "fleetman.api.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "fleetman.api.selectorLabels" . | nindent 6 }}
+  strategy:
+   type: {{ .Values.strategy.type }}
+   {{- if eq .Values.strategy.type "RollingUpdate" }}
+   rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+   {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fleetman.api.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-api-gateway
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
+          env:
+            - name: {{ .Values.environment.name }}
+              value: {{ .Values.environment.value }}
+          ports:
+            - name: api-gateway
+              containerPort: {{ .Values.api.service.port }}
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetman.fullname" . }}-web-angular
+  labels:
+    {{- include "fleetman.web.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "fleetman.web.selectorLabels" . | nindent 6 }}
+  strategy:
+   type: {{ .Values.strategy.type }}
+   {{- if eq .Values.strategy.type "RollingUpdate" }}
+   rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+   {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fleetman.web.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-web
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
+          env:
+            - name: {{ .Values.environment.name }}
+              value: {{ .Values.environment.value }}
+          ports:
+            - name: webapp
+              containerPort: {{ .Values.web.service.port }}
+              protocol: TCP

@@ -11,8 +11,10 @@ spec:
       targetPort: admin-console
       protocol: TCP
       name: admin-console
+    {{- if eq .Values.queue.service.type "NodePort" }}
       nodePort: {{ .Values.queue.service.nodePort }}
-
+    {{- end }}
+    
     - port: {{ .Values.queue.service.portEndpoint }}
       targetPort: endpoint
       protocol: TCP
@@ -20,3 +22,69 @@ spec:
 
   selector:
     {{- include "fleetman.selectorLabels" . | nindent 4 }}
+# Fleetman-position-simulator
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetman.fullname" . }}-position-tracker
+  labels:
+    {{- include "fleetman.tracker.labels" . | nindent 4 }}
+spec:
+  type: {{ default "ClusterIP" .Values.tracker.service.type }}
+  ports:
+    - port: {{ .Values.tracker.service.port }}
+      targetPort: tracker
+      protocol: TCP
+      name: tracker
+    {{- if eq .Values.tracker.service.type "NodePort" }}
+      nodePort: {{ .Values.tracker.service.nodePort }}
+    {{- end}}
+  selector:
+    {{- include "fleetman.tracker.selectorLabels" . | nindent 4 }}
+# Fleetman-api-gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetman.fullname" . }}-api-gateway
+  labels:
+    {{- include "fleetman.api.labels" . | nindent 4 }}
+spec:
+  type: {{ default "ClusterIP" .Values.api.service.type }}
+  ports:
+    - port: {{ .Values.api.service.port }}
+      targetPort: api-gateway
+      protocol: TCP
+      name: api-service
+    {{- if eq .Values.api.service.type "NodePort" }}
+      nodePort: {{ .Values.api.service.nodePort }}
+    {{- end}}
+  selector:
+    {{- include "fleetman.api.selectorLabels" . | nindent 4 }}
+
+# Fleetman-api-gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetman.fullname" . }}-web-angular
+  labels:
+    {{- include "fleetman.web.labels" . | nindent 4 }}
+spec:
+  type: {{ default "ClusterIP" .Values.web.service.type }}
+  ports:
+    - port: {{ .Values.web.service.port }}
+      targetPort: webapp
+      protocol: TCP
+      name: webapp
+    {{- if eq .Values.web.service.type "NodePort" }}
+      nodePort: {{ .Values.web.service.nodePort }}
+    {{- end}}
+  selector:
+    {{- include "fleetman.web.selectorLabels" . | nindent 4 }}
+
+
+
+
+

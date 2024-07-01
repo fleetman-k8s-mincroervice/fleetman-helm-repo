@@ -60,3 +60,63 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+#fleetman-position-simulator
+{{- define "fleetman.simulator.labels" -}}
+helm.sh/chart: {{ include "fleetman.chart" . }}
+{{ include "fleetman.simulator.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "fleetman.simulator.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "fleetman.name" . }}-simulator
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+#fleetman-position-tracker
+{{- define "fleetman.tracker.labels" -}}
+helm.sh/chart: {{ include "fleetman.chart" . }}
+{{ include "fleetman.tracker.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "fleetman.tracker.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "fleetman.name" . }}-position-tracker
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+#fleetman-api-gateway
+{{- define "fleetman.api.labels" -}}
+helm.sh/chart: {{ include "fleetman.chart" . }}
+{{ include "fleetman.api.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "fleetman.api.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "fleetman.name" . }}-api-gateway
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+#fleetman-web-angular
+{{- define "fleetman.web.labels" -}}
+helm.sh/chart: {{ include "fleetman.chart" . }}
+{{ include "fleetman.web.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "fleetman.web.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "fleetman.name" . }}-web-angular
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

@@ -3,18 +3,67 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+environment:
+  name: SPRING_PROFILES_ACTIVE
+  value: production-microservice
 
-image:
-  repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-queue
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: release2
+nameOverride: ""
+fullnameOverride: "fleetman"
 
 imagePullSecrets:
 - name: jfrog-docker-reg
 
-nameOverride: ""
-fullnameOverride: "fleetman"
+# Fleetman-Queue
+queue:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-queue
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: release2
+  #service
+  service:
+    type: NodePort
+    port: 8161
+    portEndpoint: 61616
+    nodePort: 30061
+
+# Fleetman-simulator
+simulator:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-position-simulator
+    pullPolicy: IfNotPresent
+    tag: release2
+
+# Fleetman-position-tracker
+tracker:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-position-tracker
+    pullPolicy: IfNotPresent
+    tag: release2
+  service:
+    type: ""
+    port: 8080
+    nodePort: ""
+# Fleetman-position-tracker
+api:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-api-gateway
+    pullPolicy: IfNotPresent
+    tag: release2
+  service:
+    type: ""
+    port: 8080
+    nodePort: ""
+#Web Frontend
+web:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-webapp-angular
+    pullPolicy: IfNotPresent
+    tag: release2
+  service:
+    type: "NodePort"
+    port: 80
+    nodePort: 30080
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -42,13 +91,6 @@ securityContext: {}
 # runAsUser: 1000
 
 #fleetman-queue-admin-console
-queue:
-  service:
-    type: NodePort
-    port: 8161
-    portEndpoint: 61616
-    nodePort: 30061
-
 service:
   type: ClusterIP
   port: 80
