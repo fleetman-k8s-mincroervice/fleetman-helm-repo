@@ -22,7 +22,7 @@ queue:
     tag: release2
   #service
   service:
-    type: NodePort
+    type: ""
     port: 8161
     portEndpoint: 61616
     nodePort: 30061
@@ -65,7 +65,18 @@ web:
     port: 80
     nodePort: 30080
 
-serviceAccount:
+#Mongo-DB
+mongo:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/mongo
+    pullPolicy: IfNotPresent
+    tag: release23.6.5-jessie
+  service:
+    type: ""
+    port: 27017
+    nodePort: ""
+
+    serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Automatically mount a ServiceAccount's API credentials?

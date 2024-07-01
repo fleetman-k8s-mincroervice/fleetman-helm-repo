@@ -1,3 +1,4 @@
+#Fleetman Queue
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,6 +54,7 @@ spec:
               protocol: TCP
 
 ---
+#Fleetman Simulator
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -103,6 +105,7 @@ spec:
               value: {{ .Values.environment.value }}
 
 ---
+#Fleetman position tracker
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -157,6 +160,7 @@ spec:
               protocol: TCP
 
 ---
+#Fleetman- API gateway
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -210,6 +214,7 @@ spec:
               containerPort: {{ .Values.api.service.port }}
               protocol: TCP
 ---
+#Fleetman web angular
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -262,3 +267,55 @@ spec:
             - name: webapp
               containerPort: {{ .Values.web.service.port }}
               protocol: TCP
+
+---
+#Fleetman Mongo db
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetman.fullname" . }}-mangodb
+  labels:
+    {{- include "fleetman.mongo.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "fleetman.mongo.selectorLabels" . | nindent 6 }}
+  strategy:
+   type: {{ .Values.strategy.type }}
+   {{- if eq .Values.strategy.type "RollingUpdate" }}
+   rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+   {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fleetman.mongo.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-web
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.mongo.image.repository }}:{{ .Values.mongo.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.mongo.image.pullPolicy }}
+          ports:
+            - name: mongo
+              containerPort: {{ .Values.mongo.service.port }}
+              protocol: TCP              
