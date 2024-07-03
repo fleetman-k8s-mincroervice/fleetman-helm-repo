@@ -89,6 +89,7 @@ mongo:
       fsType: ext4
     reclaimPolicy: Delete
     volumeBindingMode: WaitForFirstConsumer
+    resize: true
 
 serviceAccount:
   # Specifies whether a service account should be created

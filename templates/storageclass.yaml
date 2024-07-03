@@ -23,3 +23,6 @@ parameters:
 {{- end }}               
 reclaimPolicy: {{ .Values.mongo.storageclass.reclaimPolicy }}
 volumeBindingMode: {{ .Values.mongo.storageclass.volumeBindingMode }}
+{{- if .Values.mongo.storageclass.resize }}
+allowVolumeExpansion: true
+{{- end }}
