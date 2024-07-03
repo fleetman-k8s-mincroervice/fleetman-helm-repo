@@ -70,11 +70,22 @@ mongo:
   image:
     repository: fleetman.jfrog.io/docker/richardchesterwood/mongo
     pullPolicy: IfNotPresent
-    tag: release23.6.5-jessie
+    tag: 3.6.5-jessie
   service:
     type: ""
     port: 27017
     nodePort: ""
+  pvc:
+    accessModes: ReadWriteOnce
+    storage: 2Gi
+  storageclass:
+    storageclassname: fleetman-mongo-storage-class
+    provisioner: aws-ebs
+    parameters:
+      type: gp2
+      fsType: ext4
+    reclaimPolicy: Delete
+    volumeBindingMode: WaitForFirstConsumer
 
 serviceAccount:
   # Specifies whether a service account should be created

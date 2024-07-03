@@ -1,0 +1,25 @@
+# Fleetman persistent volume class
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+        name: {{ include "fleetman.fullname" . }}-mongo-pvc
+spec:
+        accessModes: 
+          - {{ .Values.mongo.pvc.accessModes }}
+        resources:
+          requests:
+            storage: {{ .Values.mongo.pvc.storage }}
+        storageClassName: {{ .Values.mongo.storageclass.storageclassname}}
+---
+# Fleetman storageclass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+        name: {{ .Values.mongo.storageclass.storageclassname}}
+provisioner: kubernetes.io/aws-ebs
+{{- with .Values.mongo.storageclass.parameters }}
+parameters:
+{{- toYaml . | nindent 8}}
+{{- end }}               
+reclaimPolicy: {{ .Values.mongo.storageclass.reclaimPolicy }}
+volumeBindingMode: {{ .Values.mongo.storageclass.volumeBindingMode }}
