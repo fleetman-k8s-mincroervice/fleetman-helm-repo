@@ -318,4 +318,14 @@ spec:
           ports:
             - name: mongo
               containerPort: {{ .Values.mongo.service.port }}
-              protocol: TCP              
+              protocol: TCP
+          {{- with .Values.mongo.image }}    
+          volumeMounts:
+            - mountPath: {{ .mountpath }}
+              name: {{ .volumename }}
+              readOnly: {{ .readonly }}
+          {{- end }}    
+      volumes:
+        - name: {{ .Values.mongo.image.volumename }}
+          persistentVolumeClaim: {{ include "fleetman.fullname" . }}-mongo-pvc        
+                          

@@ -71,6 +71,9 @@ mongo:
     repository: fleetman.jfrog.io/docker/richardchesterwood/mongo
     pullPolicy: IfNotPresent
     tag: 3.6.5-jessie
+    mountpath: /data/db
+    volumename: mongodb
+    readonly: false
   service:
     type: ""
     port: 27017
