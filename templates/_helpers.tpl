@@ -120,3 +120,18 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "fleetman.name" . }}-web-angular
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+#fleetman-web-angular
+{{- define "fleetman.mongo.labels" -}}
+helm.sh/chart: {{ include "fleetman.chart" . }}
+{{ include "fleetman.mongo.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "fleetman.mongo.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "fleetman.name" . }}-mongodb
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

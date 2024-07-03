@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "fleetman.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.queue.service.type }}
+  type: {{ default "ClusterIP" .Values.queue.service.type }}
   ports:
     - port: {{ .Values.queue.service.port }}
       targetPort: admin-console
@@ -84,7 +84,26 @@ spec:
   selector:
     {{- include "fleetman.web.selectorLabels" . | nindent 4 }}
 
-
+---
+# Fleetman-mondodb-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetman.fullname" . }}-mongodb
+  labels:
+    {{- include "fleetman.mongo.labels" . | nindent 4 }}
+spec:
+  type: {{ default "ClusterIP" .Values.mongo.service.type }}
+  ports:
+    - port: {{ .Values.mongo.service.port }}
+      targetPort: mongo
+      protocol: TCP
+      name: mongo-service
+    {{- if eq .Values.mongo.service.type "NodePort" }}
+      nodePort: {{ .Values.mongo.service.nodePort }}
+    {{- end}}
+  selector:
+    {{- include "fleetman.mongo.selectorLabels" . | nindent 4 }}
 
 
 

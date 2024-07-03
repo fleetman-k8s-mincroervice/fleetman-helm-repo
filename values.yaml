@@ -22,7 +22,7 @@ queue:
     tag: release2
   #service
   service:
-    type: NodePort
+    type: ""
     port: 8161
     portEndpoint: 61616
     nodePort: 30061
@@ -39,7 +39,7 @@ tracker:
   image:
     repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-position-tracker
     pullPolicy: IfNotPresent
-    tag: release2
+    tag: release3
   service:
     type: ""
     port: 8080
@@ -64,6 +64,32 @@ web:
     type: "NodePort"
     port: 80
     nodePort: 30080
+
+#Mongo-DB
+mongo:
+  image:
+    repository: fleetman.jfrog.io/docker/richardchesterwood/mongo
+    pullPolicy: IfNotPresent
+    tag: 3.6.5-jessie
+    mountpath: /data/db
+    volumename: mongodb
+    readonly: false
+  service:
+    type: ""
+    port: 27017
+    nodePort: ""
+  pvc:
+    accessModes: ReadWriteOnce
+    storage: 2Gi
+  storageclass:
+    storageclassname: fleetman-mongo-storage-class
+    provisioner: aws-ebs
+    parameters:
+      type: gp2
+      fsType: ext4
+    reclaimPolicy: Delete
+    volumeBindingMode: WaitForFirstConsumer
+    resize: true
 
 serviceAccount:
   # Specifies whether a service account should be created
