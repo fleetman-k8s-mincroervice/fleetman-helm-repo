@@ -327,5 +327,6 @@ spec:
           {{- end }}    
       volumes:
         - name: {{ .Values.mongo.image.volumename }}
-          persistentVolumeClaim: {{ include "fleetman.fullname" . }}-mongo-pvc        
+          persistentVolumeClaim: 
+            claimName: {{ include "fleetman.fullname" . }}-mongo-pvc        
                           
