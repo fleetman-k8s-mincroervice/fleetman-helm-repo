@@ -39,7 +39,7 @@ tracker:
   image:
     repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-position-tracker
     pullPolicy: IfNotPresent
-    tag: release2
+    tag: release3
   service:
     type: ""
     port: 8080
