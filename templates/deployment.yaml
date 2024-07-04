@@ -100,9 +100,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.simulator.image.repository }}:{{ .Values.simulator.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
 
 ---
 #Fleetman position tracker
@@ -151,9 +151,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.tracker.image.repository }}:{{ .Values.tracker.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
           ports:
             - name: tracker
               containerPort: {{ .Values.tracker.service.port }}
@@ -206,9 +206,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
           ports:
             - name: api-gateway
               containerPort: {{ .Values.api.service.port }}
@@ -260,9 +260,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
           ports:
             - name: webapp
               containerPort: {{ .Values.web.service.port }}

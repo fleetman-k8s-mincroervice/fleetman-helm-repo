@@ -4,7 +4,6 @@
 
 replicaCount: 1
 environment:
-  name: SPRING_PROFILES_ACTIVE
   value: production-microservice
 
 nameOverride: ""
