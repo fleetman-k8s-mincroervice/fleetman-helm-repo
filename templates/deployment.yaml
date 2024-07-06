@@ -43,7 +43,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: app
+                  - key: "app"
                     operator: In
                     values:
                       - fleetman
@@ -62,12 +62,17 @@ spec:
               containerPort: {{ .Values.queue.service.portEndpoint }}
               protocol: TCP        
           resources:
-              requests:
-                cpu: {{- default "100m" .Values.queue.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.queue.resources.requests.memory }}
-              limit:
-                cpu: {{- default "100m" .Values.queue.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.queue.resources.requests.memory }}              
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}             
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman Simulator
@@ -115,7 +120,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: app
+                  - key: "app"
                     operator: In
                     values:
                       - fleetman        
@@ -129,12 +134,18 @@ spec:
             - configMapRef:
                 name: {{ include "fleetman.fullname" . }}-configmap
           resources:
-              requests:
-                cpu: {{- default "100m" .Values.simulator.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.simulator.resources.requests.memory }}
-              limit:
-                cpu: {{- default "100m" .Values.simulator.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.simulator.resources.requests.memory }}
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
+
 ---
 #Fleetman position tracker
 apiVersion: apps/v1
@@ -181,7 +192,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: app
+                  - key: "app"
                     operator: In
                     values:
                       - fleetman        
@@ -199,12 +210,18 @@ spec:
               containerPort: {{ .Values.tracker.service.port }}
               protocol: TCP
           resources:
-              requests:
-                cpu: {{- default "100m" .Values.tracker.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.tracker.resources.requests.memory }}
-              limit:
-                cpu: {{- default "100m" .Values.tracker.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.tracker.resources.requests.memory }}
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
+
 ---
 #Fleetman- API gateway
 apiVersion: apps/v1
@@ -251,7 +268,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: app
+                  - key: "app"
                     operator: In
                     values:
                       - fleetman        
@@ -269,12 +286,17 @@ spec:
               containerPort: {{ .Values.api.service.port }}
               protocol: TCP
           resources:
-              requests:
-                cpu: {{- default "100m" .Values.api.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.api.resources.requests.memory }}
-              limit:
-                cpu: {{- default "100m" .Values.api.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.api.resources.requests.memory }}
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman web angular
@@ -322,7 +344,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: app
+                  - key: "app"
                     operator: In
                     values:
                       - fleetman        
@@ -340,12 +362,17 @@ spec:
               containerPort: {{ .Values.web.service.port }}
               protocol: TCP
           resources:
-              requests:
-                cpu: {{- default "100m" .Values.web.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.web.resources.requests.memory }}
-              limit:
-                cpu: {{- default "100m" .Values.web.resources.requests.cpu }}
-                memmory: {{- default "100Mi" .Values.web.resources.requests.memory }}
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman Mongo db
@@ -393,7 +420,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: app
+                  - key: "app"
                     operator: In
                     values:
                       - fleetman        
@@ -408,12 +435,12 @@ spec:
               containerPort: {{ .Values.mongo.service.port }}
               protocol: TCP
           resources:
-              requests:
-                cpu: {{- default "250m" .Values.mongo.resources.requests.cpu }}
-                memmory: {{- default "500Mi" .Values.mongo.resources.requests.memory }}
-              limit:
-                cpu: {{- default "250m" .Values.mongo.resources.requests.cpu }}
-                memmory: {{- default "500Mi" .Values.mongo.resources.requests.memory }}            
+            requests:
+              cpu: {{ default "250m" .Values.mongo.resources.requests.cpu }}
+              memory: {{ default "500Mi" .Values.mongo.resources.requests.memory }}
+            limits:
+              cpu: {{ default "250m" .Values.mongo.resources.limit.cpu }}
+              memory: {{ default "500Mi" .Values.mongo.resources.limit.memory }}            
           {{- with .Values.mongo.image }}    
           volumeMounts:
             - mountPath: {{ .mountpath }}
@@ -424,4 +451,9 @@ spec:
         - name: {{ .Values.mongo.image.volumename }}
           persistentVolumeClaim: 
             claimName: {{ include "fleetman.fullname" . }}-mongo-pvc        
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
                           
