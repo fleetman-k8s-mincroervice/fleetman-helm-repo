@@ -51,7 +51,14 @@ spec:
 
             - name: endpoint
               containerPort: {{ .Values.queue.service.portEndpoint }}
-              protocol: TCP
+              protocol: TCP        
+          resources:
+              requests:
+                cpu: {{- default "100m" .Values.queue.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.queue.resources.requests.memory }}
+              limit:
+                cpu: {{- default "100m" .Values.queue.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.queue.resources.requests.memory }}              
 
 ---
 #Fleetman Simulator
@@ -103,7 +110,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "fleetman.fullname" . }}-configmap
-
+          resources:
+              requests:
+                cpu: {{- default "100m" .Values.simulator.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.simulator.resources.requests.memory }}
+              limit:
+                cpu: {{- default "100m" .Values.simulator.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.simulator.resources.requests.memory }}
 ---
 #Fleetman position tracker
 apiVersion: apps/v1
@@ -158,7 +171,13 @@ spec:
             - name: tracker
               containerPort: {{ .Values.tracker.service.port }}
               protocol: TCP
-
+          resources:
+              requests:
+                cpu: {{- default "100m" .Values.tracker.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.tracker.resources.requests.memory }}
+              limit:
+                cpu: {{- default "100m" .Values.tracker.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.tracker.resources.requests.memory }}
 ---
 #Fleetman- API gateway
 apiVersion: apps/v1
@@ -213,6 +232,14 @@ spec:
             - name: api-gateway
               containerPort: {{ .Values.api.service.port }}
               protocol: TCP
+          resources:
+              requests:
+                cpu: {{- default "100m" .Values.api.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.api.resources.requests.memory }}
+              limit:
+                cpu: {{- default "100m" .Values.api.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.api.resources.requests.memory }}
+
 ---
 #Fleetman web angular
 apiVersion: apps/v1
@@ -267,6 +294,13 @@ spec:
             - name: webapp
               containerPort: {{ .Values.web.service.port }}
               protocol: TCP
+          resources:
+              requests:
+                cpu: {{- default "100m" .Values.web.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.web.resources.requests.memory }}
+              limit:
+                cpu: {{- default "100m" .Values.web.resources.requests.cpu }}
+                memmory: {{- default "100Mi" .Values.web.resources.requests.memory }}
 
 ---
 #Fleetman Mongo db
@@ -319,6 +353,13 @@ spec:
             - name: mongo
               containerPort: {{ .Values.mongo.service.port }}
               protocol: TCP
+          resources:
+              requests:
+                cpu: {{- default "250m" .Values.mongo.resources.requests.cpu }}
+                memmory: {{- default "500Mi" .Values.mongo.resources.requests.memory }}
+              limit:
+                cpu: {{- default "250m" .Values.mongo.resources.requests.cpu }}
+                memmory: {{- default "500Mi" .Values.mongo.resources.requests.memory }}            
           {{- with .Values.mongo.image }}    
           volumeMounts:
             - mountPath: {{ .mountpath }}
