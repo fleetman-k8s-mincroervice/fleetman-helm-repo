@@ -38,6 +38,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fleetman
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -101,6 +110,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-simulator
           securityContext:
@@ -158,6 +176,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-position-tracker
           securityContext:
@@ -219,6 +246,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-api-gateway
           securityContext:
@@ -281,6 +317,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-web
           securityContext:
@@ -343,6 +388,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-web
           securityContext:
