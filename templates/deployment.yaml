@@ -38,6 +38,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fleetman
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -51,7 +60,19 @@ spec:
 
             - name: endpoint
               containerPort: {{ .Values.queue.service.portEndpoint }}
-              protocol: TCP
+              protocol: TCP        
+          resources:
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}             
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman Simulator
@@ -94,15 +115,36 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-simulator
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.simulator.image.repository }}:{{ .Values.simulator.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
+          resources:
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman position tracker
@@ -145,19 +187,40 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-position-tracker
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.tracker.image.repository }}:{{ .Values.tracker.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
           ports:
             - name: tracker
               containerPort: {{ .Values.tracker.service.port }}
               protocol: TCP
+          resources:
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman- API gateway
@@ -200,19 +263,41 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-api-gateway
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
           ports:
             - name: api-gateway
               containerPort: {{ .Values.api.service.port }}
               protocol: TCP
+          resources:
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
+
 ---
 #Fleetman web angular
 apiVersion: apps/v1
@@ -254,19 +339,40 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-web
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.simulator.image.pullPolicy }}
-          env:
-            - name: {{ .Values.environment.name }}
-              value: {{ .Values.environment.value }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fleetman.fullname" . }}-configmap
           ports:
             - name: webapp
               containerPort: {{ .Values.web.service.port }}
               protocol: TCP
+          resources:
+            requests:
+              cpu: {{ default "100m" .Values.web.resources.requests.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.requests.memory }}
+            limits:
+              cpu: {{ default "100m" .Values.web.resources.limit.cpu }}
+              memmory: {{ default "100Mi" .Values.web.resources.limit.memory }}
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
 
 ---
 #Fleetman Mongo db
@@ -309,6 +415,15 @@ spec:
       serviceAccountName: {{ include "fleetman.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fleetman        
       containers:
         - name: {{ .Chart.Name }}-web
           securityContext:
@@ -319,6 +434,13 @@ spec:
             - name: mongo
               containerPort: {{ .Values.mongo.service.port }}
               protocol: TCP
+          resources:
+            requests:
+              cpu: {{ default "250m" .Values.mongo.resources.requests.cpu }}
+              memory: {{ default "500Mi" .Values.mongo.resources.requests.memory }}
+            limits:
+              cpu: {{ default "250m" .Values.mongo.resources.limit.cpu }}
+              memory: {{ default "500Mi" .Values.mongo.resources.limit.memory }}            
           {{- with .Values.mongo.image }}    
           volumeMounts:
             - mountPath: {{ .mountpath }}
@@ -329,4 +451,9 @@ spec:
         - name: {{ .Values.mongo.image.volumename }}
           persistentVolumeClaim: 
             claimName: {{ include "fleetman.fullname" . }}-mongo-pvc        
+      tolerations:
+        - effect: NoExecute
+          key: purpose
+          operator: Equal
+          value: gps
                           

@@ -1,32 +1,20 @@
-{{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "fleetman.fullname" . }}
-  labels:
-    {{- include "fleetman.labels" . | nindent 4 }}
+  name: {{ include "fleetman.fullname" . }}-api-gateway
 spec:
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+        type: Utilization
+    type: Resource
+   {{- end }} 
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "fleetman.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
-  metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
-    {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
-    {{- end }}
-{{- end }}
+    name: {{ include "fleetman.fullname" . }}-api-gateway

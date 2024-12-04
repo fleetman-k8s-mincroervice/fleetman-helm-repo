@@ -3,11 +3,12 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+
 environment:
-  name: SPRING_PROFILES_ACTIVE
   value: production-microservice
 
 nameOverride: ""
+
 fullnameOverride: "fleetman"
 
 imagePullSecrets:
@@ -26,6 +27,13 @@ queue:
     port: 8161
     portEndpoint: 61616
     nodePort: 30061
+  resources:
+    requests:
+      cpu: ""
+      memory: ""
+    limit:
+      cpu: ""
+      memory: ""
 
 # Fleetman-simulator
 simulator:
@@ -33,6 +41,13 @@ simulator:
     repository: fleetman.jfrog.io/docker/richardchesterwood/k8s-fleetman-position-simulator
     pullPolicy: IfNotPresent
     tag: release2
+  resources:
+    requests:
+      cpu: ""
+      memory: ""
+    limit:
+      cpu: ""
+      memory: ""
 
 # Fleetman-position-tracker
 tracker:
@@ -44,6 +59,15 @@ tracker:
     type: ""
     port: 8080
     nodePort: ""
+  resources:
+    enabled: true
+    requests:
+      cpu: ""
+      memory: ""
+    limit:
+      cpu: ""
+      memory: ""
+
 # Fleetman-position-tracker
 api:
   image:
@@ -54,6 +78,14 @@ api:
     type: ""
     port: 8080
     nodePort: ""
+  resources:
+    requests:
+      cpu: ""
+      memory: ""
+    limit:
+      cpu: ""
+      memory: ""
+
 #Web Frontend
 web:
   image:
@@ -64,6 +96,13 @@ web:
     type: "NodePort"
     port: 80
     nodePort: 30080
+  resources:
+    requests:
+      cpu: ""
+      memory: ""
+    limit:
+      cpu: ""
+      memory: ""
 
 #Mongo-DB
 mongo:
@@ -90,6 +129,13 @@ mongo:
     reclaimPolicy: Delete
     volumeBindingMode: WaitForFirstConsumer
     resize: true
+  resources:
+    requests:
+      cpu: ""
+      memory: ""
+    limit:
+      cpu: ""
+      memory: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -161,8 +207,8 @@ readinessProbe:
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
@@ -175,7 +221,7 @@ volumes: []
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
 # - name: foo
-#   mountPath: "/etc/foo"
+#   mountPath: "/data/db"
 #   readOnly: true
 
 nodeSelector: {}
